@@ -1,0 +1,228 @@
+{
+  "name": "ViltrumOne - AI Agent Query Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "42912bbe-4a83-4535-bcf3-04bcd6430c66",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -352,
+        -16
+      ],
+      "id": "7cc2a3a1-5188-4831-9889-79a4d444558d",
+      "name": "Webhook",
+      "webhookId": "42912bbe-4a83-4535-bcf3-04bcd6430c66"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a customer support chatbot for ViltrumOne ecommerce site.\nFor every single user query you receive, you must use the Pinecone vector store tool attached as RAG to retrieve relevant information to answer the user's query. Answer as concise but helpful as possible\n\nDo not entertain any queries that aren't aligned with what's in the RAG, simply shortly state that you only answer questions relevant to the website or what's in the knowledge base.\\\n\nDo not say that you searched through the knowledge base or something similar."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        16,
+        -16
+      ],
+      "id": "c18ae392-8915-4164-aee7-ccf398e34c91",
+      "name": "AI Agent",
+      "notesInFlow": true,
+      "notes": "Query AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -128,
+        224
+      ],
+      "id": "cb601e3e-3d6d-4abc-bd54-efeac8fea663",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "EtZxgCOnfo5Cs18p",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"reply\": \"{{ JSON.stringify($json.output.output).slice(1, -1)}}\"\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        496,
+        -16
+      ],
+      "id": "d1b0a39d-4108-43e8-89f0-39bfd15c64a1",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "This is a RAG for the AI agent to access relevant knowledge base",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "vo-ecomm-rag",
+          "mode": "list",
+          "cachedResultName": "vo-ecomm-rag"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        96,
+        256
+      ],
+      "id": "078975ad-1ebc-4a3e-848b-a9d5951d95e8",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "K9BxfMsXoQC1vC9c",
+          "name": "Pinecone account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "dimensions": 1536
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        144,
+        448
+      ],
+      "id": "d3ef0834-ccf3-4484-abcc-0ab189ebaa01",
+      "name": "Embeddings OpenAI",
+      "notesInFlow": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "EtZxgCOnfo5Cs18p",
+          "name": "OpenAI account"
+        }
+      },
+      "notes": "Chatbot embedding"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"output\": \"response here\",\n\t\"message\": \"user query here\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        416,
+        256
+      ],
+      "id": "700ed857-c9cf-496e-8591-8c1fe0d8a8d1",
+      "name": "Structured Output Parser"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "d0e70fec-63fd-4376-a5f0-3a8f17614777",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bd532ff1eff4f847b1006977274c783c9443b05882aafd4269ec5ec9ffb76a97"
+  },
+  "nodeGroups": [],
+  "id": "Vs1bebTVlBRswZGp",
+  "tags": []
+}
