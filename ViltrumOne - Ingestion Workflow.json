@@ -1,0 +1,170 @@
+{
+  "name": "ViltrumOne - Ingestion Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "vo-ecomm-rag",
+          "mode": "list",
+          "cachedResultName": "vo-ecomm-rag"
+        },
+        "embeddingBatchSize": 1,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        32,
+        -160
+      ],
+      "id": "291c8319-34a6-459c-9318-c79b89c86804",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "K9BxfMsXoQC1vC9c",
+          "name": "Pinecone account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "dimensions": 1536
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -32,
+        112
+      ],
+      "id": "2d666d45-6695-4b35-8527-dd2f0676759e",
+      "name": "Embeddings OpenAI",
+      "notesInFlow": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "EtZxgCOnfo5Cs18p",
+          "name": "OpenAI account"
+        }
+      },
+      "notes": "Chatbot embedding"
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "loader": "docxLoader",
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        128,
+        16
+      ],
+      "id": "c03359f4-6fe9-43e6-a472-00bb0a144dc0",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkSize": 400,
+        "chunkOverlap": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        176,
+        192
+      ],
+      "id": "515de4c8-be41-4270-a6d4-275a36430100",
+      "name": "Character Text Splitter",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "formTitle": "Upload document to be embedded and stored in a vector database",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Knowledge base",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -224,
+        -160
+      ],
+      "id": "7fc51833-7e92-41b2-b59c-d234a0bf8cfa",
+      "name": "On form submission",
+      "webhookId": "64cdfb9e-ed50-4e71-af8b-21fb40a786e3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "c20d7aad-56cd-418f-b181-94b5cb3b012e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bd532ff1eff4f847b1006977274c783c9443b05882aafd4269ec5ec9ffb76a97"
+  },
+  "nodeGroups": [],
+  "id": "2JYdLlp9AbOl79E5",
+  "tags": []
+}
