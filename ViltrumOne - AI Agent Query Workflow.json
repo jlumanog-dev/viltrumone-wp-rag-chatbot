@@ -30,7 +30,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        16,
+        32,
         -16
       ],
       "id": "c18ae392-8915-4164-aee7-ccf398e34c91",
@@ -51,8 +51,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        -128,
-        224
+        -120,
+        216
       ],
       "id": "cb601e3e-3d6d-4abc-bd54-efeac8fea663",
       "name": "OpenAI Chat Model",
@@ -72,7 +72,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        496,
+        624,
         -16
       ],
       "id": "d1b0a39d-4108-43e8-89f0-39bfd15c64a1",
@@ -93,8 +93,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
       "typeVersion": 1.3,
       "position": [
-        96,
-        256
+        136,
+        216
       ],
       "id": "078975ad-1ebc-4a3e-848b-a9d5951d95e8",
       "name": "Pinecone Vector Store",
@@ -114,8 +114,8 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        144,
-        448
+        216,
+        424
       ],
       "id": "d3ef0834-ccf3-4484-abcc-0ab189ebaa01",
       "name": "Embeddings OpenAI",
@@ -135,11 +135,31 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        416,
-        256
+        424,
+        216
       ],
       "id": "700ed857-c9cf-496e-8591-8c1fe0d8a8d1",
       "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.sessionId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.4,
+      "position": [
+        48,
+        144
+      ],
+      "id": "e555abfb-0117-44fe-bb13-6df9616bf29f",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "QwnFus8NUumtflQf",
+          "name": "Postgres account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -209,6 +229,17 @@
           }
         ]
       ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -217,7 +248,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "d0e70fec-63fd-4376-a5f0-3a8f17614777",
+  "versionId": "5dd3e971-fae8-4528-90a6-012589b48179",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "bd532ff1eff4f847b1006977274c783c9443b05882aafd4269ec5ec9ffb76a97"
