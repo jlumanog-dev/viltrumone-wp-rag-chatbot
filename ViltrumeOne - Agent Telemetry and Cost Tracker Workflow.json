@@ -1,0 +1,335 @@
+{
+  "name": "ViltrumeOne - Agent Telemetry and Cost Tracker Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "jsonExample",
+        "jsonExample": "{\n  \"timestamp\": \"2026-09-09T09:08:28.678Z\",\n  \"session_id\": \"6a1acd4f-5720-4d50-9c15-459495d53984\",\n  \"question\": \"what products you sell here?\",\n    \n    \n  \"answer\": \"ViltrumOne offers products in three main categories:\\n\\n1. **Accessories** – keyboards, mice, cables, adapters, headphones, webcams, and other peripherals.\\n2. **Computers** – desktops, laptops, monitors, storage devices, memory, computer components, and other hardware.\\n3. **New Arrivals** – recently added and newly listed items in the catalog.\\n\\nLet me know if you'd like more info on any specific category or product!\",\n    \n  \"latency_ms\": 12345678,\n  \"execId\": \"123\",\n  \"sessionId\": \"6a1ad4f-5720-4d50-9c15-459495d53984\"\n\n}"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e8b26dbb-6136-418d-98b9-414f76c49245",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "amount": 7
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "da3a9819-3ef3-4c65-8f29-7bb1a05a2189",
+      "name": "Wait",
+      "webhookId": "efd74d92-1649-4915-ac19-6bc58ebd0613"
+    },
+    {
+      "parameters": {
+        "resource": "execution",
+        "operation": "get",
+        "executionId": "=195",
+        "options": {
+          "activeWorkflows": true
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "6850c0a2-fa7b-4860-bb2b-37f475d1146f",
+      "name": "Get an execution",
+      "credentials": {
+        "n8nApi": {
+          "id": "2dZUWxYbwIfLret3",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1sPEnFST6vFlT-wwrnjkSxeoP6bpvLAFsnbvp9JQlNDg",
+          "mode": "list",
+          "cachedResultName": "Agent Runs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sPEnFST6vFlT-wwrnjkSxeoP6bpvLAFsnbvp9JQlNDg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sPEnFST6vFlT-wwrnjkSxeoP6bpvLAFsnbvp9JQlNDg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $json.timestamp }}",
+            "session_id": "={{ $json.sessionId }}",
+            "question": "={{ $json.question }}",
+            "answer": "={{ $json.answer }}",
+            "sources": "vo_docs_palceholder",
+            "tokens": "placeholder",
+            "escalated": "placeholder_bool",
+            "latency_ms": "={{ $json.latency_ms }}",
+            "cost_usd": "={{ \n\n(($json.token_in / 1000000) * 2) + (($json.token_out  / 1000000) * 10)\n\n}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "question",
+              "displayName": "question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "answer",
+              "displayName": "answer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sources",
+              "displayName": "sources",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tokens",
+              "displayName": "tokens",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "cost_usd",
+              "displayName": "cost_usd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "latency_ms",
+              "displayName": "latency_ms",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "escalated",
+              "displayName": "escalated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        800,
+        0
+      ],
+      "id": "b0350c4a-1279-4796-9ed7-4b803c06db4a",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8aRFLCA9F1ddrORx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## REMINDER\n\nThe price in and out rates are still hard coded on the Append node, and that it's based on Claude Sonnet 5's rates.\n\nMight create a coditional branch to check which model was used for each entry or session.\n\nMight also add another column to add Model to indicate what model was used on that entry.\n",
+        "height": 320,
+        "width": 512
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        272
+      ],
+      "typeVersion": 1,
+      "id": "814e211d-f83c-4c6a-bbc4-4c2678bfb8a1",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "06cc79f7-55a3-4d91-9ce9-5b0e77ed16f9",
+              "name": "timestamp",
+              "value": "={{ $('When Executed by Another Workflow').item.json.timestamp }}",
+              "type": "string"
+            },
+            {
+              "id": "bfede90f-7b9b-4281-be68-06de0135ce4a",
+              "name": "question",
+              "value": "={{ $('When Executed by Another Workflow').item.json.question }}",
+              "type": "string"
+            },
+            {
+              "id": "9bbc8ea9-8089-4e2b-949e-990591ceb896",
+              "name": "answer",
+              "value": "={{ $('When Executed by Another Workflow').item.json.answer }}",
+              "type": "string"
+            },
+            {
+              "id": "a8321b59-d789-455e-8849-c0c0f6890121",
+              "name": "latency_ms",
+              "value": "={{ $('When Executed by Another Workflow').item.json.latency_ms }}",
+              "type": "string"
+            },
+            {
+              "id": "ff97198e-b6ef-451e-8da5-3d20b41f7627",
+              "name": "token_in",
+              "value": "={{ $json.data.resultData.runData['Chat Assistant Agent'][0].metadata.tracing['llm.tokens.in'] }}",
+              "type": "number"
+            },
+            {
+              "id": "a0d6b478-68e0-4a1a-8933-772dfb8fd0e7",
+              "name": "token_out",
+              "value": "={{ $json.data.resultData.runData['Chat Assistant Agent'][0].metadata.tracing['llm.tokens.out'] }}",
+              "type": "number"
+            },
+            {
+              "id": "fddad3af-2724-4524-b6a7-614f596cfd0e",
+              "name": "sessionId",
+              "value": "={{ $('When Executed by Another Workflow').item.json.session_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        624,
+        0
+      ],
+      "id": "ddefe7ba-14dd-443b-bceb-4763a0674691",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get an execution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get an execution": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "7acb447f-1906-4485-8209-eeb86ef60ef1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bd532ff1eff4f847b1006977274c783c9443b05882aafd4269ec5ec9ffb76a97"
+  },
+  "nodeGroups": [],
+  "id": "x65sURIfZfXn25hF",
+  "tags": []
+}
