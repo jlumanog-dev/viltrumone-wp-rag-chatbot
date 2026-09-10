@@ -31,8 +31,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        -464,
-        704
+        -784,
+        464
       ],
       "id": "cb601e3e-3d6d-4abc-bd54-efeac8fea663",
       "name": "OpenAI Chat Model",
@@ -160,7 +160,7 @@
         "promptType": "define",
         "text": "={{ $json.body.message }}",
         "options": {
-          "systemMessage": "You are a customer support chatbot for ViltrumOne ecommerce site.\n\nFor every single user query you receive, you must use the Pinecone vector store tool attached as RAG to retrieve relevant information to answer the user's query. Answer as concise but helpful as possible.\n\nNever invent policy, prices or order details — escalate instead by issuing a new ticket via escalation tool. Make sure you generate concise but accurate description of what is being escalated for the reason field.\n\nDo not entertain any queries that aren't aligned with what's in the RAG, simply shortly state that you only answer questions relevant to the website or what's in the knowledge base.\n\nDo not say that you searched through the knowledge base or something similar.\n\nWhen the user or prompt asked questions related to their order, make sure that the user has included an order ID you can use to pass to a WooCommerce tool with a 'Get' operation and 'Order' as the resource being fetched, if not, just ask them to specify their order number, and maybe their email address where they receive the order confirmation if they placed an order without an account.\n"
+          "systemMessage": "=You are a customer support chatbot for ViltrumOne ecommerce site.\n\nFor every single user query you receive, you must use the Pinecone vector store tool attached as RAG to retrieve relevant information to answer the user's query. Answer as concise but helpful as possible.\n\nNever invent policy, prices or order details — escalate instead by issuing a new ticket via escalation tool and afterwards, send an email to admin via the provided Gmail account on the tool. Make sure you generate concise but accurate description of what is being escalated for the reason field and the email's message body. On email message body, include at the beginning \"Session ID: {{ $json.body.sessionId }}\", then on a new line is where you put the reason or description.\n\nDo not entertain any queries that aren't aligned with what's in the retrieved documents or queries that are inherently malicious that causes autonomous overreach. Simply shortly state that you only answer questions relevant to the site's policies, FAQs, and whatever else in the knowledge base you can find, and read-only/get operation WooCommerce tools about orders and product information only.\n\nDo not say that you searched through the knowledge base or something similar, answer like you're an actual customer support.\n\nWhen the user or prompt asked questions related to their order, make sure that the user has included an order ID you can use to pass to a WooCommerce tool with a 'Get' operation and 'Order' as the resource being fetched, if not, just ask them to specify their order number, and maybe their email address where they receive the order confirmation if they placed an order without an account.\n"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -186,7 +186,6 @@
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
-            "sessionId": "={{ $('Webhook').item.json.body.sessionId }}",
             "execId": "={{ $execution.id }}",
             "latency_ms": "={{ $json.latency_ms }}",
             "timestamp": "={{ $json.timestamp }}",
@@ -264,7 +263,7 @@
               "display": true,
               "canBeUsedToMatch": true,
               "type": "string",
-              "removed": false
+              "removed": true
             }
           ],
           "attemptToConvertTypes": false,
@@ -282,27 +281,6 @@
       ],
       "id": "159092a4-b0a1-4810-9578-3ffe408dac03",
       "name": "Call 'ViltrumeOne - Agent Telemetry and Cost Tracker Workflow'"
-    },
-    {
-      "parameters": {
-        "resource": "order",
-        "operation": "get",
-        "orderId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Order_ID', ``, 'string') }}"
-      },
-      "type": "n8n-nodes-base.wooCommerceTool",
-      "typeVersion": 1,
-      "position": [
-        208,
-        224
-      ],
-      "id": "031a1ea7-e389-4c61-93f5-807df45acd27",
-      "name": "Get an order in WooCommerce",
-      "credentials": {
-        "wooCommerceApi": {
-          "id": "QvRlSx5byXGgfoBQ",
-          "name": "WooCommerce account"
-        }
-      }
     },
     {
       "parameters": {
@@ -339,7 +317,7 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
       "typeVersion": 1.3,
       "position": [
-        -80,
+        -112,
         208
       ],
       "id": "078975ad-1ebc-4a3e-848b-a9d5951d95e8",
@@ -348,6 +326,52 @@
         "pineconeApi": {
           "id": "K9BxfMsXoQC1vC9c",
           "name": "Pinecone account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-5",
+          "cachedResultName": "Claude Sonnet 5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        -352,
+        208
+      ],
+      "id": "996817af-0340-4608-b898-a0369ec74f27",
+      "name": "Sonnet 5",
+      "credentials": {
+        "anthropicApi": {
+          "id": "wnm3dY9FpZJlXIrH",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "order",
+        "operation": "get",
+        "orderId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Order_ID', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.wooCommerceTool",
+      "typeVersion": 1,
+      "position": [
+        336,
+        208
+      ],
+      "id": "031a1ea7-e389-4c61-93f5-807df45acd27",
+      "name": "Get order details",
+      "credentials": {
+        "wooCommerceApi": {
+          "id": "QvRlSx5byXGgfoBQ",
+          "name": "WooCommerce account"
         }
       }
     },
@@ -451,11 +475,11 @@
       "type": "n8n-nodes-base.postgresTool",
       "typeVersion": 2.7,
       "position": [
-        336,
-        224
+        480,
+        208
       ],
       "id": "20dbb18b-01ae-474f-bd81-b17c66ace6fc",
-      "name": "Escalation: Issue a new ticket",
+      "name": "Escalation: Issue New ticket",
       "credentials": {
         "postgres": {
           "id": "QwnFus8NUumtflQf",
@@ -465,26 +489,27 @@
     },
     {
       "parameters": {
-        "model": {
-          "__rl": true,
-          "mode": "list",
-          "value": "claude-sonnet-5",
-          "cachedResultName": "Claude Sonnet 5"
-        },
-        "options": {}
+        "sendTo": "joshualumanog.dev@gmail.com",
+        "subject": "[Chatbot Escalation] New Ticket Generated",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
       },
-      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
-      "typeVersion": 1.6,
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
       "position": [
-        -368,
+        176,
         208
       ],
-      "id": "996817af-0340-4608-b898-a0369ec74f27",
-      "name": "Sonnet 5",
+      "id": "9f9d4296-7f89-4c9b-86f5-8ac2933b92be",
+      "name": "Notify chatbot escalation to internal team",
+      "webhookId": "68b0bb4f-1455-46ed-8910-eef617fd840c",
       "credentials": {
-        "anthropicApi": {
-          "id": "wnm3dY9FpZJlXIrH",
-          "name": "Anthropic account"
+        "gmailOAuth2": {
+          "id": "RsPKH0OCiyIxDJ5v",
+          "name": "Gmail account"
         }
       }
     }
@@ -567,17 +592,6 @@
         []
       ]
     },
-    "Get an order in WooCommerce": {
-      "ai_tool": [
-        [
-          {
-            "node": "Chat Assistant Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Chat memory": {
       "ai_memory": [
         [
@@ -600,7 +614,18 @@
         ]
       ]
     },
-    "Escalation: Issue a new ticket": {
+    "Sonnet 5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Chat Assistant Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get order details": {
       "ai_tool": [
         [
           {
@@ -611,12 +636,23 @@
         ]
       ]
     },
-    "Sonnet 5": {
-      "ai_languageModel": [
+    "Escalation: Issue New ticket": {
+      "ai_tool": [
         [
           {
             "node": "Chat Assistant Agent",
-            "type": "ai_languageModel",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify chatbot escalation to internal team": {
+      "ai_tool": [
+        [
+          {
+            "node": "Chat Assistant Agent",
+            "type": "ai_tool",
             "index": 0
           }
         ]
@@ -629,7 +665,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "5f32e9ce-4bc5-498f-9dba-a6eb50c7b26e",
+  "versionId": "5890af13-219f-4142-8ca7-f07b1f417105",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "bd532ff1eff4f847b1006977274c783c9443b05882aafd4269ec5ec9ffb76a97"
