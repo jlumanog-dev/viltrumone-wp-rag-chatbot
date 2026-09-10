@@ -11,7 +11,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -320,
+        -544,
         -16
       ],
       "id": "7cc2a3a1-5188-4831-9889-79a4d444558d",
@@ -31,8 +31,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        -624,
-        528
+        -464,
+        704
       ],
       "id": "cb601e3e-3d6d-4abc-bd54-efeac8fea663",
       "name": "OpenAI Chat Model",
@@ -52,39 +52,12 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        480,
+        256,
         -16
       ],
       "id": "d1b0a39d-4108-43e8-89f0-39bfd15c64a1",
       "name": "Respond to Webhook",
       "alwaysOutputData": false
-    },
-    {
-      "parameters": {
-        "mode": "retrieve-as-tool",
-        "toolDescription": "This is a RAG for the AI agent to access relevant knowledge base",
-        "pineconeIndex": {
-          "__rl": true,
-          "value": "vo-ecomm-rag",
-          "mode": "list",
-          "cachedResultName": "vo-ecomm-rag"
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
-      "typeVersion": 1.3,
-      "position": [
-        208,
-        224
-      ],
-      "id": "078975ad-1ebc-4a3e-848b-a9d5951d95e8",
-      "name": "Pinecone Vector Store",
-      "credentials": {
-        "pineconeApi": {
-          "id": "K9BxfMsXoQC1vC9c",
-          "name": "Pinecone account"
-        }
-      }
     },
     {
       "parameters": {
@@ -95,8 +68,8 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        288,
-        432
+        -80,
+        400
       ],
       "id": "d3ef0834-ccf3-4484-abcc-0ab189ebaa01",
       "name": "Embeddings OpenAI",
@@ -108,51 +81,6 @@
         }
       },
       "notes": "Chatbot embedding"
-    },
-    {
-      "parameters": {
-        "sessionIdType": "customKey",
-        "sessionKey": "={{ $json.body.sessionId }}"
-      },
-      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
-      "typeVersion": 1.4,
-      "position": [
-        80,
-        224
-      ],
-      "id": "e555abfb-0117-44fe-bb13-6df9616bf29f",
-      "name": "Postgres Chat Memory",
-      "credentials": {
-        "postgres": {
-          "id": "QwnFus8NUumtflQf",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "mode": "list",
-          "value": "claude-sonnet-5",
-          "cachedResultName": "Claude Sonnet 5"
-        },
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
-      "typeVersion": 1.6,
-      "position": [
-        -64,
-        224
-      ],
-      "id": "996817af-0340-4608-b898-a0369ec74f27",
-      "name": "Anthropic Chat Model",
-      "credentials": {
-        "anthropicApi": {
-          "id": "wnm3dY9FpZJlXIrH",
-          "name": "Anthropic account"
-        }
-      }
     },
     {
       "parameters": {
@@ -172,7 +100,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        -144,
+        -320,
         -16
       ],
       "id": "19335375-be34-4aca-85ab-a982b9cfcc2c",
@@ -221,7 +149,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        736,
+        480,
         -16
       ],
       "id": "6da5695b-f4f1-4549-9dc9-dc4af9305bf9",
@@ -232,13 +160,13 @@
         "promptType": "define",
         "text": "={{ $json.body.message }}",
         "options": {
-          "systemMessage": "You are a customer support chatbot for ViltrumOne ecommerce site.\nFor every single user query you receive, you must use the Pinecone vector store tool attached as RAG to retrieve relevant information to answer the user's query. Answer as concise but helpful as possible\n\nDo not entertain any queries that aren't aligned with what's in the RAG, simply shortly state that you only answer questions relevant to the website or what's in the knowledge base.\\\n\nDo not say that you searched through the knowledge base or something similar."
+          "systemMessage": "You are a customer support chatbot for ViltrumOne ecommerce site.\n\nFor every single user query you receive, you must use the Pinecone vector store tool attached as RAG to retrieve relevant information to answer the user's query. Answer as concise but helpful as possible.\n\nNever invent policy, prices or order details — escalate instead by issuing a new ticket via escalation tool. Make sure you generate concise but accurate description of what is being escalated for the reason field.\n\nDo not entertain any queries that aren't aligned with what's in the RAG, simply shortly state that you only answer questions relevant to the website or what's in the knowledge base.\n\nDo not say that you searched through the knowledge base or something similar.\n\nWhen the user or prompt asked questions related to their order, make sure that the user has included an order ID you can use to pass to a WooCommerce tool with a 'Get' operation and 'Order' as the resource being fetched, if not, just ask them to specify their order number, and maybe their email address where they receive the order confirmation if they placed an order without an account.\n"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        96,
+        -80,
         -16
       ],
       "id": "c18ae392-8915-4164-aee7-ccf398e34c91",
@@ -349,11 +277,216 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        960,
+        704,
         -16
       ],
       "id": "159092a4-b0a1-4810-9578-3ffe408dac03",
       "name": "Call 'ViltrumeOne - Agent Telemetry and Cost Tracker Workflow'"
+    },
+    {
+      "parameters": {
+        "resource": "order",
+        "operation": "get",
+        "orderId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Order_ID', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.wooCommerceTool",
+      "typeVersion": 1,
+      "position": [
+        208,
+        224
+      ],
+      "id": "031a1ea7-e389-4c61-93f5-807df45acd27",
+      "name": "Get an order in WooCommerce",
+      "credentials": {
+        "wooCommerceApi": {
+          "id": "QvRlSx5byXGgfoBQ",
+          "name": "WooCommerce account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.sessionId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.4,
+      "position": [
+        -224,
+        208
+      ],
+      "id": "e555abfb-0117-44fe-bb13-6df9616bf29f",
+      "name": "Chat memory",
+      "credentials": {
+        "postgres": {
+          "id": "QwnFus8NUumtflQf",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "This is a RAG for the AI agent to access relevant knowledge base",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "vo-ecomm-rag",
+          "mode": "list",
+          "cachedResultName": "vo-ecomm-rag"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -80,
+        208
+      ],
+      "id": "078975ad-1ebc-4a3e-848b-a9d5951d95e8",
+      "name": "Knowledge Base (RAG)",
+      "credentials": {
+        "pineconeApi": {
+          "id": "K9BxfMsXoQC1vC9c",
+          "name": "Pinecone account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tickets",
+          "mode": "list",
+          "cachedResultName": "tickets"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "question": "={{ $json.body.message }}",
+            "session_id": "={{ $json.body.sessionId }}",
+            "reason": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('reason', ``, 'string') }}",
+            "status": "open",
+            "created_at": "={{ DateTime.now().toISO() }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "question",
+              "displayName": "question",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "reason",
+              "displayName": "reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "resolved_at",
+              "displayName": "resolved_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.7,
+      "position": [
+        336,
+        224
+      ],
+      "id": "20dbb18b-01ae-474f-bd81-b17c66ace6fc",
+      "name": "Escalation: Issue a new ticket",
+      "credentials": {
+        "postgres": {
+          "id": "QwnFus8NUumtflQf",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-5",
+          "cachedResultName": "Claude Sonnet 5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.6,
+      "position": [
+        -368,
+        208
+      ],
+      "id": "996817af-0340-4608-b898-a0369ec74f27",
+      "name": "Sonnet 5",
+      "credentials": {
+        "anthropicApi": {
+          "id": "wnm3dY9FpZJlXIrH",
+          "name": "Anthropic account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -374,34 +507,12 @@
         []
       ]
     },
-    "Pinecone Vector Store": {
-      "ai_tool": [
-        [
-          {
-            "node": "Chat Assistant Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Embeddings OpenAI": {
       "ai_embedding": [
         [
           {
-            "node": "Pinecone Vector Store",
+            "node": "Knowledge Base (RAG)",
             "type": "ai_embedding",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Postgres Chat Memory": {
-      "ai_memory": [
-        [
-          {
-            "node": "Chat Assistant Agent",
-            "type": "ai_memory",
             "index": 0
           }
         ]
@@ -413,17 +524,6 @@
           {
             "node": "Map data for 'Agent Runs' Entry",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Anthropic Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Chat Assistant Agent",
-            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -466,6 +566,61 @@
       "main": [
         []
       ]
+    },
+    "Get an order in WooCommerce": {
+      "ai_tool": [
+        [
+          {
+            "node": "Chat Assistant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Chat Assistant Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Knowledge Base (RAG)": {
+      "ai_tool": [
+        [
+          {
+            "node": "Chat Assistant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escalation: Issue a new ticket": {
+      "ai_tool": [
+        [
+          {
+            "node": "Chat Assistant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sonnet 5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Chat Assistant Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -474,7 +629,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "10aba338-afaf-4061-9f2b-7e834b164d1c",
+  "versionId": "5f32e9ce-4bc5-498f-9dba-a6eb50c7b26e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "bd532ff1eff4f847b1006977274c783c9443b05882aafd4269ec5ec9ffb76a97"
