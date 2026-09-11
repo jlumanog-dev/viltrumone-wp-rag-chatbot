@@ -6,7 +6,9 @@
         "httpMethod": "POST",
         "path": "42912bbe-4a83-4535-bcf3-04bcd6430c66",
         "responseMode": "responseNode",
-        "options": {}
+        "options": {
+          "allowedOrigins": "https://jlmng.cloud"
+        }
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
@@ -21,7 +23,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={\n  \"reply\": \"{{ $('Chat Assistant Agent').item.json.output.output }}\"\n} ",
+        "responseBody": "={{ JSON.stringify({reply: $('Chat Assistant Agent').item.json.output.output}) }}",
         "options": {}
       },
       "type": "n8n-nodes-base.respondToWebhook",
@@ -744,7 +746,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "aa8e4e4f-d012-48c0-aecb-82bf988be796",
+  "versionId": "061d32f2-de15-425e-8878-e79655b6ef43",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "bd532ff1eff4f847b1006977274c783c9443b05882aafd4269ec5ec9ffb76a97"
