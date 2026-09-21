@@ -246,3 +246,5 @@ Enforced through the system prompt and the structured output schema:
 ---
  
 ## License
+
+MIT — see [LICENSE](LICENSE).
